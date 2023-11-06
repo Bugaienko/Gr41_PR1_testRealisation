@@ -16,11 +16,11 @@ public class Reader {
     private final MyList<Book> readerBooks;
     private LocalDate createAt; // должно быть финальным. Но для тестирования данных добавим геттер
 
-    public Reader(String name) {
-        this.name = name;
-        this.readerBooks = new MyArrayList<>();
-        createAt = LocalDate.now();
-    }
+//    public Reader(String name) {
+//        this.name = name;
+//        this.readerBooks = new MyArrayList<>();
+//        createAt = LocalDate.now();
+//    }
 
     public Reader(String name, String password) {
         this.name = name;

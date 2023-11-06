@@ -18,11 +18,11 @@ public class Menu {
         this.service = service;
     }
 
-    public void run(){
+    public void run() {
         showMenu();
     }
 
-    private void showMenu(){
+    private void showMenu() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Добро пожаловать в библиотеку");
@@ -125,7 +125,7 @@ public class Menu {
     }
 
     private void printBookList(MyList<Book> books) {
-        for (Book book: books){
+        for (Book book : books) {
             System.out.printf("%d. %s (%s) | %d\n", book.getId(), book.getTitle(), book.getAuthor(), book.getYear());
         }
         System.out.println();
