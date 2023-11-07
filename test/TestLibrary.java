@@ -78,6 +78,9 @@ public class TestLibrary {
     @ParameterizedTest
     @MethodSource("dataValidReaderCreate")
     void testCreateCorrectReader(String name, String password) {
+        service.authorizationReader("User1", "Password1"); // авторизация админа
+        //TODO дописать тест на роли
+
         MyList<Reader> readers = service.getAllReaders();
         int size = readers.size();
         Reader reader = service.createReader(name, password);
@@ -187,6 +190,9 @@ public class TestLibrary {
 
     @Test
     void testGetAllReaders() {
+        service.authorizationReader("User1", "Password1"); // авторизация админа
+        //TODO тест на роли
+
         MyList<Reader> readers = service.getAllReaders();
         assertEquals(6, readers.size());
 //        for (Reader reader : readers) {
@@ -211,6 +217,8 @@ public class TestLibrary {
     @ParameterizedTest
     @MethodSource("dataAddBooks")
     void testAddBook(String title, String author, int year, boolean flag) {
+        service.authorizationReader("User2", "Password2"); // авторизация библиотекаря
+        //TODO дописать тест проверки на роль
         MyList<Book> books = service.getAllBooks();
         int size = books.size();
         Book newBook = service.createNewBook(title, author, year);

@@ -7,12 +7,15 @@ package service;
 import inerfaces.InterfaceLibrary;
 import model.Book;
 import model.Reader;
+import model.Role;
 import repository.BookRepository;
 import repository.ReaderRepository;
+import util.MyArrayList;
 import util.MyList;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 public class LibraryService implements InterfaceLibrary {
 
@@ -75,6 +78,10 @@ public class LibraryService implements InterfaceLibrary {
 
     @Override
     public MyList<Reader> getAllReaders() {
+        if (activeReader == null || activeReader.getRole() != Role.ADMIN) {
+            System.err.println("Для выполнения запроса авторизуйтесь с правами администратора");
+            return new MyArrayList<>();
+        }
         return readerRepository.getAllReaders();
     }
 
@@ -189,11 +196,18 @@ public class LibraryService implements InterfaceLibrary {
 
    @Override
    public Book createNewBook(String title, String author, int year) {
-        if (title == null || title.isEmpty() || author == null || year < 0) return null;
+        if (title == null || title.isEmpty() || author == null || year < 0) {
+            System.err.println("Не корректные параметры");
+            return null;
+        }
         Book book = null;
-        // Book newBook = new Book(title, author, year);
-        if (!bookRepository.isBookExist(title, author, year)) {
-           book = bookRepository.addBook(title, author, year);
+        if (!(activeReader == null || activeReader.getRole() != Role.LIBRARIAN)) {
+            // Book newBook = new Book(title, author, year);
+            if (!bookRepository.isBookExist(title, author, year)) {
+                book = bookRepository.addBook(title, author, year);
+            }
+        } else {
+            System.err.println("Вы должны быть авторизированны с правами библиотекаря");
         }
         return book;
     }

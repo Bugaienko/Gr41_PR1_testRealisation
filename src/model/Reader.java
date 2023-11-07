@@ -14,6 +14,7 @@ public class Reader {
     private String name;
     private String password;
     private final MyList<Book> readerBooks;
+    private Role role = Role.READER;
     private LocalDate createAt; // должно быть финальным. Но для тестирования данных добавим геттер
 
 //    public Reader(String name) {
@@ -34,6 +35,7 @@ public class Reader {
         return "Reader{" +
                 "name='" + name + '\'' +
                 ", readerBooks=" + readerBooks +
+                ", role=" + role +
                 '}';
     }
 
@@ -83,5 +85,13 @@ public class Reader {
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (createAt != null ? createAt.hashCode() : 0);
         return result;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

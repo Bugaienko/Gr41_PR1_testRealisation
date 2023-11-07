@@ -7,6 +7,7 @@ package repository;
 import inerfaces.InterfaceReaderRepository;
 import model.Book;
 import model.Reader;
+import model.Role;
 import util.MyArrayList;
 import util.MyList;
 
@@ -24,9 +25,11 @@ public class ReaderRepository implements InterfaceReaderRepository {
 
         Reader reader = new Reader("User1", "Password1");
         reader.setCreateAt(LocalDate.of(2020, 1, 25));
+        reader.setRole(Role.ADMIN);
 
         Reader reader1 = new Reader("User2", "Password2");
         reader1.setCreateAt(LocalDate.of(2001, 12, 25));
+        reader1.setRole(Role.LIBRARIAN);
 
         Reader reader2 = new Reader("User3", "Password3");
         reader2.setCreateAt(LocalDate.of(2018, 2, 1));
