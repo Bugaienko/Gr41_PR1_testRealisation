@@ -9,6 +9,7 @@ import model.Reader;
 import util.MyList;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public interface InterfaceLibrary {
@@ -24,7 +25,7 @@ public interface InterfaceLibrary {
     MyList<Book> getAllFreeBooks();
     MyList<Book> getAllBusyBook();
 
-    Book getBookById(int id);
+    Optional<Book> getBookById(int id);
 
     MyList<Book> getAllBooks();
 

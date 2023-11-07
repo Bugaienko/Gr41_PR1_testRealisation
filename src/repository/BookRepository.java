@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
@@ -63,8 +64,18 @@ public class BookRepository implements InterfaceBookRepo<Book> {
     }
 
     @Override
-    public Book getBookById(int id) {
-        return books.stream().filter(b -> b.getId() == id).findFirst().orElse(null);
+    public Optional<Book> getBookById(int id) {
+        Book book = null;
+        for (Book book1 : books){
+            if (book1.getId() == id) {
+                book = book1;
+                break;
+            }
+        }
+
+        return Optional.ofNullable(book);
+
+        //return books.stream().filter(b -> b.getId() == id).findFirst().orElse(null);
     }
 
     @Override

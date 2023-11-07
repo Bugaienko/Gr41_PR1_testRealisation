@@ -34,21 +34,32 @@ public class LibraryService implements InterfaceLibrary {
     private void initData() {
 
 //        Book book = bookRepository.getBookByTitle("Изучаем Java");
-        Book book = bookRepository.getBookById(4);
+
+        Optional<Book> optionalBook = bookRepository.getBookById(4);
+        Book book = null;
+        if (optionalBook.isPresent()) {
+            book = optionalBook.get();
+        } else {
+            return;
+        }
         Reader reader = readerRepository.getReaderByName("User3");
         bookRepository.takeBook(book);
         readerRepository.takeBook(book, reader);
         book.setDateTaken(LocalDate.of(2023, 8, 1));
 
 //        book = bookRepository.getBookByTitle("Чистый код. Создание, анализ и рефакторинг");
-        book = bookRepository.getBookById(7);
+        if (bookRepository.getBookById(7).isPresent()) {
+            book = bookRepository.getBookById(7).get();
+        }
         reader = readerRepository.getReaderByName("User3");
         bookRepository.takeBook(book);
         readerRepository.takeBook(book, reader);
         book.setDateTaken(LocalDate.of(2023, 1, 15));
 
 //        book = bookRepository.getBookByTitle("Разработка через тестирование. Практика TDD и приемочного TDD для Java-разработчиков");
-        book = bookRepository.getBookById(8);
+        if (bookRepository.getBookById(8).isPresent()) {
+            book = bookRepository.getBookById(8).get();
+        }
         reader = readerRepository.getReaderByName("User6");
         bookRepository.takeBook(book);
         readerRepository.takeBook(book, reader);
@@ -57,16 +68,22 @@ public class LibraryService implements InterfaceLibrary {
     }
 
     @Override
-    public long getBusyDaysForBook(int id){
-        Book book = bookRepository.getBookById(id);
-        if (book == null || !book.isTaken()) return -1;
+    public long getBusyDaysForBook(int id) {
+        Optional<Book> optional = bookRepository.getBookById(id);
+        Book book;
+        if (optional.isPresent()) {
+            book = optional.get();
+        } else {
+            return -1;
+        }
+        if (!book.isTaken()) return -1;
         long busyDays = book.getDateTaken().until(LocalDate.now(), ChronoUnit.DAYS);
         return busyDays;
 
     }
 
     @Override
-    public Book getBookById(int id){
+    public Optional<Book> getBookById(int id) {
         return bookRepository.getBookById(id);
     }
 
@@ -115,12 +132,13 @@ public class LibraryService implements InterfaceLibrary {
 
     @Override
     public Reader getReaderByBook(int id) {
-        Book book = bookRepository.getBookById(id);
-        if (book == null) {
+        Optional<Book> optional = bookRepository.getBookById(id);
+
+        if (optional.isEmpty()) {
             System.out.println("Книги с таким названием не найдено");
             return null;
         } else {
-            return book.getReader();
+            return optional.get().getReader();
         }
     }
 
@@ -151,10 +169,13 @@ public class LibraryService implements InterfaceLibrary {
             return false;
         }
 
-        Book book = bookRepository.getBookById(id);
-        if (book == null) {
+        Book book;
+        Optional<Book> optional = bookRepository.getBookById(id);
+        if (optional.isEmpty()) {
             System.out.println("Книга не найдена!");
             return false;
+        } else {
+            book = optional.get();
         }
 
         if (book.isTaken()) {
@@ -165,17 +186,20 @@ public class LibraryService implements InterfaceLibrary {
         return true;
     }
 
-   @Override
-   public boolean releaseBook(int id) {
+    @Override
+    public boolean releaseBook(int id) {
         if (activeReader == null) {
             System.out.println("Необходимо авторизовать пользователя");
             return false;
         }
 
-        Book book = bookRepository.getBookById(id);
-        if (book == null) {
+        Book book;
+        Optional<Book> optional = bookRepository.getBookById(id);
+        if (optional.isEmpty()) {
             System.out.println("Книга не найдена!");
             return false;
+        } else {
+            book = optional.get();
         }
 
         if (!book.isTaken()) {
@@ -194,8 +218,8 @@ public class LibraryService implements InterfaceLibrary {
     }
 
 
-   @Override
-   public Book createNewBook(String title, String author, int year) {
+    @Override
+    public Book createNewBook(String title, String author, int year) {
         if (title == null || title.isEmpty() || author == null || year < 0) {
             System.err.println("Не корректные параметры");
             return null;
@@ -233,9 +257,10 @@ public class LibraryService implements InterfaceLibrary {
 
     @Override
     public LocalDate getDateTaken(int id) {
-        Book book = bookRepository.getBookById(id);
-        if (book == null) return null;
-        return book.getDateTaken();
+        Book book;
+        Optional<Book> optional = bookRepository.getBookById(id);
+        if (optional.isEmpty()) return null;
+        return optional.get().getDateTaken();
     }
 
     @Override

@@ -7,6 +7,7 @@ package inerfaces;
 import model.Book;
 import util.MyList;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public interface InterfaceBookRepo<T extends Book> {
@@ -17,7 +18,7 @@ public interface InterfaceBookRepo<T extends Book> {
     //boolean isBookExist(Book book);
 
     MyList<T> getBooksByTitle(String title);
-    T getBookById(int id);
+    Optional<T> getBookById(int id);
     MyList<T> getAllBooks();
 
     T addBook(String title, String author, int year);

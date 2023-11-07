@@ -16,6 +16,7 @@ import service.LibraryService;
 import util.MyList;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +41,11 @@ public class TestLibrary {
         busyBooks = service.getAllBusyBook();
         MyList<Book> availableBooks = service.getAllFreeBooks();
 
-        Book book = service.getBookById(id);
+//        Book book = null;
+//        Optional<Book> optional = service.getBookById(id);
+//        if (optional.isPresent()) book = optional.get();
+
+        Book book = service.getBookById(id).orElse(null);
         assertTrue(book.isTaken());
         assertTrue(busyBooks.contains(book));
         assertFalse(availableBooks.contains(book));
@@ -143,7 +148,7 @@ public class TestLibrary {
     @ParameterizedTest
     @MethodSource("dataTestCorrectTitle")
     void testFindBookByCorrectId(int id, String title, String author, int year) {
-        Book book = service.getBookById(id);
+        Book book = service.getBookById(id).get();
         assertEquals(id, book.getId());
         assertEquals(title, book.getTitle());
         assertEquals(author, book.getAuthor());
@@ -161,7 +166,7 @@ public class TestLibrary {
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4, 5, 6})
     void testGetById(int id) {
-        Book book = service.getBookById(id);
+        Book book = service.getBookById(id).orElse(null);
         System.out.println("test get: " + book);
         assertNotNull(book);
     }
@@ -169,7 +174,7 @@ public class TestLibrary {
     @ParameterizedTest
     @MethodSource("dataTestInvalidTitle")
     void testFindBookByInvalidId(int invalidId) {
-        Book book = service.getBookById(invalidId);
+        Book book = service.getBookById(invalidId).orElse(null);
         assertNull(book);
     }
 
