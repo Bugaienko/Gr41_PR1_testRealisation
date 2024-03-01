@@ -23,6 +23,14 @@ public class ReaderRepository implements InterfaceReaderRepository {
 
     private void init() {
 
+        Reader testAdm = new Reader("1", "1");
+        testAdm.setCreateAt(LocalDate.of(2018, 1, 25));
+        testAdm.setRole(Role.ADMIN);
+
+        Reader test = new Reader("2", "2");
+        testAdm.setCreateAt(LocalDate.of(2018, 1, 25));
+
+
         Reader reader = new Reader("User1", "Password1");
         reader.setCreateAt(LocalDate.of(2020, 1, 25));
         reader.setRole(Role.ADMIN);
@@ -41,7 +49,7 @@ public class ReaderRepository implements InterfaceReaderRepository {
         reader4.setCreateAt(LocalDate.of(2020, 10, 25));
 
         Reader reader5 = new Reader("User6", "Password6");
-        readers.addAll(reader, reader1, reader2, reader3, reader4, reader5);
+        readers.addAll(testAdm, test, reader, reader1, reader2, reader3, reader4, reader5);
     }
 
 
@@ -51,9 +59,10 @@ public class ReaderRepository implements InterfaceReaderRepository {
     }
 
     @Override
-    public Reader getReaderByName(String name) {
+    public Reader getReaderByEmail(String email
+    ) {
         for (Reader reader : readers) {
-            if (reader.getName().equals(name)) {
+            if (reader.getEmail().equals(email)) {
                 return reader;
             }
         }
@@ -62,9 +71,9 @@ public class ReaderRepository implements InterfaceReaderRepository {
 
 
     @Override
-    public boolean isReaderNameExist(String name) {
+    public boolean isReaderEmailExist(String email) {
         for (Reader reader : readers) {
-            if (reader.getName().equals(name)) return true;
+            if (reader.getEmail().equals(email)) return true;
         }
         return false;
     }

@@ -5,6 +5,7 @@
 
 import model.Book;
 import model.Reader;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,10 +17,10 @@ import service.LibraryService;
 import util.MyList;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 
 public class TestLibrary {
 
@@ -30,6 +31,7 @@ public class TestLibrary {
 
 
     LibraryService service = new LibraryService(bookRepository, readerRepository);
+
 
     @ParameterizedTest
     @MethodSource("dataTakeValidBook")
@@ -257,7 +259,7 @@ public class TestLibrary {
         Reader active = service.getActiveReader();
         if (flag) {
             assertNotNull(authReader);
-            assertEquals(name, active.getName());
+            assertEquals(name, active.getEmail());
             assertEquals(password, active.getPassword());
             assertEquals(authReader, active);
         } else {

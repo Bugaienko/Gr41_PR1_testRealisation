@@ -10,8 +10,10 @@ import model.Reader;
 import model.Role;
 import repository.BookRepository;
 import repository.ReaderRepository;
+
 import util.MyArrayList;
 import util.MyList;
+import validators.UserValidator;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -42,7 +44,7 @@ public class LibraryService implements InterfaceLibrary {
         } else {
             return;
         }
-        Reader reader = readerRepository.getReaderByName("User3");
+        Reader reader = readerRepository.getReaderByEmail("User3");
         bookRepository.takeBook(book);
         readerRepository.takeBook(book, reader);
         book.setDateTaken(LocalDate.of(2023, 8, 1));
@@ -51,7 +53,7 @@ public class LibraryService implements InterfaceLibrary {
         if (bookRepository.getBookById(7).isPresent()) {
             book = bookRepository.getBookById(7).get();
         }
-        reader = readerRepository.getReaderByName("User3");
+        reader = readerRepository.getReaderByEmail("User3");
         bookRepository.takeBook(book);
         readerRepository.takeBook(book, reader);
         book.setDateTaken(LocalDate.of(2023, 1, 15));
@@ -60,7 +62,7 @@ public class LibraryService implements InterfaceLibrary {
         if (bookRepository.getBookById(8).isPresent()) {
             book = bookRepository.getBookById(8).get();
         }
-        reader = readerRepository.getReaderByName("User6");
+        reader = readerRepository.getReaderByEmail("User6");
         bookRepository.takeBook(book);
         readerRepository.takeBook(book, reader);
         book.setDateTaken(LocalDate.of(2023, 9, 13));
@@ -113,15 +115,15 @@ public class LibraryService implements InterfaceLibrary {
     }
 
     @Override
-    public Reader authorizationReader(String name, String password) {
-        Reader reader = readerRepository.getReaderByName(name);
+    public Reader authorizationReader(String email, String password) {
+        Reader reader = readerRepository.getReaderByEmail(email);
         if (reader == null) return null;
 
         if (reader.getPassword().equals(password)) {
+            logout();
             activeReader = reader;
             return reader;
         }
-
         return null;
     }
 
@@ -135,11 +137,15 @@ public class LibraryService implements InterfaceLibrary {
         Optional<Book> optional = bookRepository.getBookById(id);
 
         if (optional.isEmpty()) {
-            System.out.println("Книги с таким названием не найдено");
+            System.out.println("Книги с таким id свободна");
             return null;
         } else {
             return optional.get().getReader();
         }
+    }
+
+    public MyList<Book> getBooksByTitle(String title) {
+        return bookRepository.getBooksByPredicate(book -> book.getTitle().contains(title));
     }
 
     @Override
@@ -162,6 +168,9 @@ public class LibraryService implements InterfaceLibrary {
         return bookRepository.getBooksByPredicate(book -> book.isTaken() == status);
     }
 
+
+
+
     @Override
     public boolean takeBook(int id) {
         if (activeReader == null) {
@@ -180,6 +189,22 @@ public class LibraryService implements InterfaceLibrary {
 
         if (book.isTaken()) {
             System.out.println("Книга занята. Сейчас у пользователя: " + book.getReader());
+        }
+        bookRepository.takeBook(book);
+        readerRepository.takeBook(book, activeReader);
+        return true;
+    }
+
+    public boolean takeBook(Book book) {
+        if (activeReader == null) {
+            System.out.println("Необходимо авторизовать пользователя");
+            return false;
+        }
+
+
+        if (book.isTaken()) {
+            System.out.println("Книга занята. Сейчас у пользователя: " + book.getReader());
+            return false;
         }
         bookRepository.takeBook(book);
         readerRepository.takeBook(book, activeReader);
@@ -238,19 +263,27 @@ public class LibraryService implements InterfaceLibrary {
 
     @Override
     public void logout() {
+        if (activeReader != null) {
+            System.out.printf("Пользователь %s вышел из системы\n", activeReader.getEmail());
+        }
         activeReader = null;
     }
 
     @Override
-    public Reader createReader(String name, String password) {
+    public Reader createReader(String email, String password) {
         Reader reader = null;
-        if (name == null || password == null || name.isEmpty() || password.isEmpty()) {
+        if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
             System.out.println("Пустое имя или пароль");
-        } else if (readerRepository.isReaderNameExist(name)) {
+        } else if (readerRepository.isReaderEmailExist(email)) {
             System.out.println("Пользователь с таким именем существует");
         } else {
-            reader = new Reader(name, password);
-            readerRepository.save(reader);
+            if (UserValidator.isEmailValid(email) && UserValidator.isPasswordValid(password)) {
+                reader = new Reader(email, password);
+                readerRepository.save(reader);
+            }
+//            else {
+//                System.out.println("Email или пароль не соответствуют требованиям");
+//            }
         }
         return reader;
     }
@@ -271,7 +304,7 @@ public class LibraryService implements InterfaceLibrary {
 
     @Override
     public MyList<Book> getBooksByReader(String readerName) {
-        Reader reader = readerRepository.getReaderByName(readerName);
+        Reader reader = readerRepository.getReaderByEmail(readerName);
         if (reader == null) return null;
         return reader.getReaderBooks();
     }

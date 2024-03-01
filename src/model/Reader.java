@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Reader {
-    private String name;
+    private String email;
     private String password;
     private final MyList<Book> readerBooks;
     private Role role = Role.READER;
@@ -23,8 +23,8 @@ public class Reader {
 //        createAt = LocalDate.now();
 //    }
 
-    public Reader(String name, String password) {
-        this.name = name;
+    public Reader(String email, String password) {
+        this.email = email;
         this.password = password;
         this.readerBooks = new MyArrayList<>();
         createAt = LocalDate.now();
@@ -33,7 +33,7 @@ public class Reader {
     @Override
     public String toString() {
         return "Reader{" +
-                "name='" + name + '\'' +
+                "name='" + email + '\'' +
                 ", readerBooks=" + readerBooks +
                 ", role=" + role +
                 '}';
@@ -51,12 +51,12 @@ public class Reader {
         this.password = password;
     }
 
-    public String getName() {
-        return name;
+    public String getEmail() {
+        return email;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public MyList<Book> getReaderBooks() {
@@ -74,14 +74,14 @@ public class Reader {
 
         Reader reader = (Reader) o;
 
-        if (!Objects.equals(name, reader.name)) return false;
+        if (!Objects.equals(email, reader.email)) return false;
         if (!Objects.equals(password, reader.password)) return false;
         return Objects.equals(createAt, reader.createAt);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = email != null ? email.hashCode() : 0;
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (createAt != null ? createAt.hashCode() : 0);
         return result;

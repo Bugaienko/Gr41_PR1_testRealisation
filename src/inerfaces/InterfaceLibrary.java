@@ -10,7 +10,6 @@ import util.MyList;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public interface InterfaceLibrary {
 
