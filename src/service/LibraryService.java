@@ -1,6 +1,6 @@
 package service;
 /*
-@date 28.10.2023
+@date 01.03.2024
 @author Sergey Bugaienko
 */
 
@@ -303,8 +303,8 @@ public class LibraryService implements InterfaceLibrary {
     }
 
     @Override
-    public MyList<Book> getBooksByReader(String readerName) {
-        Reader reader = readerRepository.getReaderByEmail(readerName);
+    public MyList<Book> getBooksByReader(String readerEmail) {
+        Reader reader = readerRepository.getReaderByEmail(readerEmail);
         if (reader == null) return null;
         return reader.getReaderBooks();
     }

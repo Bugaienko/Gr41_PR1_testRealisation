@@ -1,11 +1,12 @@
 package view;
 /*
-@date 02.11.2023
+@date 01.03.2024
 @author Sergey Bugaienko
 */
 
 import model.Book;
 import model.Reader;
+import model.Role;
 import service.LibraryService;
 import util.MyList;
 
@@ -16,6 +17,20 @@ import java.util.Scanner;
 public class Menu {
     private final LibraryService service;
     private final Scanner SCANNER = new Scanner(System.in);
+
+    private final static String RED_COLOR = "\u001B[31m";
+    private final static String BLACK_COLOR = "\u001B[0m";
+
+    public static final String RESET_COLOR = "\u001B[0m";
+    public static final String COLOR_BLACK = "\u001B[30m";
+    public static final String COLOR_RED = "\u001B[31m";
+    public static final String COLOR_GREEN = "\u001B[32m";
+    public static final String COLOR_YELLOW = "\u001B[33m";
+    public static final String COLOR_BLUE = "\u001B[34m";
+    public static final String COLOR_PURPLE = "\u001B[35m";
+    public static final String COLOR_CYAN = "\u001B[36m";
+
+    public static final String COLOR_WHITE = "\u001B[37m";
 
     public Menu(LibraryService service) {
         this.service = service;
@@ -28,8 +43,8 @@ public class Menu {
     private void showMenu() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("Добро пожаловать в библиотеку");
-            System.out.println("=========== v 1.0 ===========");
+            System.out.println(COLOR_GREEN + "Добро пожаловать в библиотеку");
+            System.out.println("=========== v 1.0 ===========" + RESET_COLOR);
             System.out.println("1. Меню книг");
             System.out.println("2. Меню пользователей");
             System.out.println("3. Меню администратора");
@@ -63,16 +78,42 @@ public class Menu {
         }
     }
 
+    // ============ ADMIN menu
+
     private void showAdminMenu() {
-        //TODO
-        System.out.println("Меню администратора");
+        if (!(service.getActiveReader() == null || service.getActiveReader().getRole() != Role.ADMIN)) {
+            while (true) {
+                System.out.println(COLOR_GREEN + "Admin Menu" + RESET_COLOR);
+                System.out.println("1. Список всех книг");
+                System.out.println("2. Список всех свободных книг");
+                System.out.println("3. Список книг по автору");
+
+                if (service.getActiveReader() != null) {
+                    System.out.println("4. Взять книгу");
+                    System.out.println("5. Вернуть книгу");
+                } else {
+                    System.out.println("\nВы не авторизованы. Некоторые пункты меню не доступны\n");
+                }
+                System.out.println("0. Вернуться в предыдущее меню");
+                System.out.println("\nСделайте выбор:");
+                int choice = SCANNER.nextInt();
+                SCANNER.nextLine();
+                if (choice == 0) break;
+                choiceBookMenuProcessing(choice);
+            }
+        } else {
+            System.out.println("Admin Menu");
+            System.out.println(RED_COLOR + "У вас недостаточно прав для работы с меню администратора" + RESET_COLOR);
+            waitRead();
+
+        }
     }
 
     // ============ BOOK menu
 
     private void showBookMenu() {
         while (true) {
-            System.out.println("Book Menu");
+            System.out.println(COLOR_GREEN + "Book Menu" + RESET_COLOR);
             System.out.println("1. Список всех книг");
             System.out.println("2. Список всех свободных книг");
             System.out.println("3. Список книг по автору");
@@ -124,13 +165,13 @@ public class Menu {
                     if (myBook != null) {
                         boolean isSuccessesTaken = service.takeBook(myBook);
                         if (isSuccessesTaken) {
-                            System.out.printf("Пользователь %s ВЗЯЛ из библиотеки книгу %s", service.getActiveReader().getEmail(), myBook.getTitle());
+                            System.out.printf(COLOR_GREEN + "Пользователь %s ВЗЯЛ из библиотеки книгу %s" + RESET_COLOR, service.getActiveReader().getEmail(), myBook.getTitle());
                         } else {
-                            System.out.printf("Книгу %s взять не удалось", myBook);
+                            System.out.printf(RED_COLOR + "Книгу %s взять не удалось" + RESET_COLOR, myBook.getTitle());
                         }
 
                     } else {
-                        System.out.println("Не удалось найти книгу");
+                        System.out.println(COLOR_RED + "Не удалось найти книгу" + RESET_COLOR);
                     }
 
                 }
@@ -140,10 +181,44 @@ public class Menu {
                 System.out.println("Вернуть книгу");
                 Reader reader1 = service.getActiveReader();
                 if (reader1 == null) {
-                    System.out.println("Вы должны авторизоваться");
+                    System.out.println(COLOR_RED + "Вы должны авторизоваться" + BLACK_COLOR);
                     waitRead();
                     break;
                 }
+                MyList<Book> readerBooks = service.getBooksActiveReader();
+                if (readerBooks.isEmpty()) {
+                    System.out.println("У вас нет книг");
+                    waitRead();
+                    break;
+                } else {
+                    System.out.println("Ваши книги:");
+                    printBookList(readerBooks);
+                    System.out.println("\nКакую книгу хотите вернуть?");
+                    Book myBook = findById();
+                    if (myBook != null) {
+                        if (!readerBooks.contains(myBook)) {
+                            System.out.println("У вас нет книги " + myBook.getTitle());
+                            waitRead();
+                            break;
+                        } else {
+                            boolean isReleased = service.releaseBook(myBook.getId());
+                            if (isReleased) {
+                                System.out.printf(COLOR_GREEN + "Пользователь %s ВЕРНУЛ в библиотеку книгу %s" + RESET_COLOR, service.getActiveReader().getEmail(), myBook.getTitle());
+                                waitRead();
+                                break;
+                            } else {
+                                waitRead();
+                            }
+                        }
+                    } else {
+                        System.out.println("Не удалось найти книгу");
+                        waitRead();
+                    }
+
+
+                }
+
+
                 break;
             default:
                 System.out.println("Не верный ввод\n");
@@ -154,7 +229,7 @@ public class Menu {
 
     private Book menuChoiceBook() {
         while (true) {
-            System.out.println("Меню выбора книги");
+            System.out.println(COLOR_CYAN + "Меню выбора книги" + RESET_COLOR);
             System.out.println("1. Найти книгу по id");
             System.out.println("2. Найти книгу по автору");
             System.out.println("3. Найти книгу по названию");
@@ -187,7 +262,7 @@ public class Menu {
                     System.out.println("Введите часть или полное название книги:");
                     String title = SCANNER.nextLine();
                     MyList<Book> books1 = service.getBooksByTitle(title);
-                    if (books1.isEmpty()) {
+                    if (!books1.isEmpty()) {
                         printBookList(books1);
                         Book book2 = findById();
                         if (book2 == null) continue;
@@ -214,7 +289,7 @@ public class Menu {
         Optional<Book> bookOptional = service.getBookById(findId);
         if (bookOptional.isEmpty()) {
             System.out.printf("Книга с %d не найдена\n", findId);
-            waitRead();
+//            waitRead();
             return null;
         }
         Book book = bookOptional.get();
@@ -225,7 +300,7 @@ public class Menu {
     // ============ User menu
     private void showUsersMenu() {
         while (true) {
-            System.out.println("Меню пользователей");
+            System.out.println(COLOR_GREEN + "Меню пользователей" + RESET_COLOR);
             System.out.println("1 -> Авторизация в системе");
             System.out.println("2 -> Регистрация нового пользователя");
             System.out.println("3 -> Logout");
@@ -246,7 +321,7 @@ public class Menu {
         switch (input) {
             case 1:
                 //Авторизация
-                System.out.println("Авторизация нового пользователя\n");
+                System.out.println(COLOR_CYAN + "Авторизация нового пользователя\n" + RESET_COLOR);
                 System.out.println("Введите ваш email:");
                 String email = SCANNER.nextLine();
 
@@ -256,15 +331,15 @@ public class Menu {
                 Reader reader = service.authorizationReader(email, password);
 
                 if (reader == null) {
-                    System.out.println("Не верный email или password");
+                    System.out.println(COLOR_RED + "Не верный email или password" + RESET_COLOR);
                 } else {
-                    System.out.println("Вы успешно авторизовались в системе!");
+                    System.out.println(COLOR_GREEN + "Вы успешно авторизовались в системе!" + RESET_COLOR);
                 }
                 waitRead();
                 break;
             case 2:
                 //Регистрация
-                System.out.println("Регистрация нового пользователя\n");
+                System.out.println(COLOR_CYAN + "Регистрация нового пользователя\n" + RESET_COLOR);
                 System.out.println("Введите ваш email:");
                 String emailReg = SCANNER.nextLine();
 
@@ -299,7 +374,7 @@ public class Menu {
                 waitRead();
                 break;
             default:
-                System.out.println("\nНе верный ввод");
+                System.out.println(RED_COLOR + "\nНе верный ввод" + BLACK_COLOR);
                 waitRead();
         }
     }
@@ -313,7 +388,7 @@ public class Menu {
     }
 
     private void waitRead() {
-        System.out.println("\nДля продолжения нажмите Enter ...");
+        System.out.println(COLOR_YELLOW + "\nДля продолжения нажмите Enter ..." + RESET_COLOR);
         SCANNER.nextLine();
     }
 
