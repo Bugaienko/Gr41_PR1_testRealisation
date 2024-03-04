@@ -348,9 +348,9 @@ public class Menu {
 
                 Reader registerUser = service.createReader(emailReg, passwordReg);
                 if (registerUser == null) {
-                    System.out.println("Вы ввели некорректный email или password");
+                    System.out.println(COLOR_RED + "Вы ввели некорректный email или password" + RESET_COLOR);
                 } else {
-                    System.out.println("Вы успешно зарегистрировались в системе");
+                    System.out.println(COLOR_GREEN + "Вы успешно зарегистрировались в системе" + RESET_COLOR);
                     System.out.println("Для начала работу пройдите авторизацию");
                 }
                 waitRead();

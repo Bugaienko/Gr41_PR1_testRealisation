@@ -98,8 +98,8 @@ public class TestLibrary {
 
     private static Stream<Arguments> dataValidReaderCreate() {
         return Stream.of(
-                Arguments.of("UserT", "passwordT"),
-                Arguments.of("UserTest", "passwordTest")
+                Arguments.of("valid@email.com", "qwerty!1Q"),
+                Arguments.of("test@user.net", "passwordE3$")
         );
     }
 
@@ -201,7 +201,7 @@ public class TestLibrary {
         //TODO тест на роли
 
         MyList<Reader> readers = service.getAllReaders();
-        assertEquals(6, readers.size());
+        assertEquals(8, readers.size());
 //        for (Reader reader : readers) {
 //            System.out.print(reader + " | ");
 //            System.out.print(reader.getCreateAt().format(formatter));
