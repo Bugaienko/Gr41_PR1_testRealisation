@@ -17,6 +17,8 @@ import validators.UserValidator;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Optional;
 
 public class LibraryService implements InterfaceLibrary {
@@ -67,6 +69,13 @@ public class LibraryService implements InterfaceLibrary {
         readerRepository.takeBook(book, reader);
         book.setDateTaken(LocalDate.of(2023, 9, 13));
 
+    }
+
+    public MyList<Book> getSortedList(Comparator<Book> comparator) {
+        Book[] books = bookRepository.getAllBooks().toArray();
+        Arrays.sort(books, comparator);
+        MyList<Book> result = new MyArrayList<>(books);
+        return result;
     }
 
     @Override

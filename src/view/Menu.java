@@ -11,6 +11,7 @@ import service.LibraryService;
 import util.MyList;
 
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -124,6 +125,8 @@ public class Menu {
             } else {
                 System.out.println("\nВы не авторизованы. Некоторые пункты меню не доступны\n");
             }
+
+            System.out.println("99. Получить список книг отсортированных по автору");
             System.out.println("0. Вернуться в предыдущее меню");
             System.out.println("\nСделайте выбор:");
             int choice = SCANNER.nextInt();
@@ -150,6 +153,11 @@ public class Menu {
                 String authorSearch = SCANNER.nextLine();
                 MyList<Book> books2 = service.getBooksByAuthor(authorSearch);
                 printBookList(books2);
+                waitRead();
+                break;
+            case 99:
+                MyList<Book> books3 = service.getSortedList(Comparator.comparing(Book::getAuthor));
+                printBookList(books3);
                 waitRead();
                 break;
             case 4:
